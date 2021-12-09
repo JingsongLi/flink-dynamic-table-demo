@@ -1,0 +1,43 @@
+version: '2.1'
+services:
+  zeppelin-flink:
+    image: lzljs3620320/zeppelin-flink:1.0
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - datagen
+    environment:
+      MYSQL_HOST: mysql
+    volumes:
+      - shared-tmpfs:/tmp/store
+  kafka: 
+    image: johnnypark/kafka-zookeeper
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - NUM_PARTITIONS=8
+  mysql:
+    image: debezium/example-mysql:1.1
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+  datagen:
+    image: lzljs3620320/datagen:1.0
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+
+volumes:
+  shared-tmpfs:
+    driver: local
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
