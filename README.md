@@ -145,4 +145,9 @@ GROUP BY parent_cate_id;
 SELECT * FROM dws_cate_day WHERE dt = '${3-days-ago}';
 ```
 
-## 谢谢尝试
+## 附录：查看动态表文件存储
+- docker-compose exec zeppelin-flink /bin/bash
+- cd /tmp/store/
+
+# 谢谢尝试
+
