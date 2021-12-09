@@ -16,6 +16,7 @@
 - 点击 Interpreter
 - 搜索 flink
 - 配置 FLINK_HOME 为 `/opt/flink-1.15-SNAPSHOT`
+- 拉到下面，选 SAVE
 - 点击左上 Notebook，create new note
 - 自定义名字，选择 flink，点击 create
 - 执行 show tables; 查看 Flink UI: localhost:8081
@@ -143,3 +144,5 @@ GROUP BY parent_cate_id;
 --OLAP查询：查看订正后数据
 SELECT * FROM dws_cate_day WHERE dt = '${3-days-ago}';
 ```
+
+## 谢谢尝试
