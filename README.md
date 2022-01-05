@@ -149,5 +149,31 @@ SELECT * FROM dws_cate_day WHERE dt = '${3-days-ago}';
 - docker-compose exec zeppelin-flink /bin/bash
 - cd /tmp/store/
 
+## FAQ
+- `docker-compose up -d`遇到 `address already in use` 报错
+    ```text
+    ERROR: for flink-dynamic-table-demo_zeppelin-flink_1  Cannot start service zeppelin-flink: Ports are not available: listen tcp 0.0.0.0:8081: bind: address already in use
+    
+    ERROR: for zeppelin-flink  Cannot start service zeppelin-flink: Ports are not available: listen tcp 0.0.0.0:8081: bind: address already in use
+    ERROR: Encountered errors while bringing up the project.
+    ```
+
+  原因: 本地有其它进程占用了 8081 端口号, 可通过如下命令找到进程 pid
+
+    ```shell
+    sudo lsof -nP -iTCP:8081 | grep LISTEN
+    ```
+
+    ```shell
+    sudo kill -9 ${pid}
+    ```
+  也可以修改 `docker-compose.yml` HOST_PORT 与 CONTAINER_PORT 的 mapping 关系, e.g. 将 HOST_PORT 改为 8082
+    ```yaml
+    ports:
+      - "${HOST_PORT}:${CONTAINER_PORT}"
+      - "8082:8081"
+    ```
+  container ready 后打开 `localhost:${HOST_PORT}`
+
 # 谢谢尝试
 
