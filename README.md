@@ -19,13 +19,15 @@
 - 拉到下面，选 SAVE
 - 点击左上 Notebook，create new note
 - 自定义名字，选择 flink，点击 create
-- 执行 show tables; 查看 Flink UI: localhost:8081
+- 执行 `%flink.ssql show tables`; 查看 Flink UI: localhost:8081
 
 ## 流式数仓
 ![image](https://user-images.githubusercontent.com/9601882/145389495-0f0dad27-9e6d-457e-971d-9a4844151e2b.png)
 
 Mysql cdc DDLs:
 ```
+%flink.ssql
+
 -- Mysql CDC：订单表
 CREATE TEMPORARY TABLE orders (
     order_id VARCHAR,
@@ -35,13 +37,13 @@ CREATE TEMPORARY TABLE orders (
     dt AS DATE_FORMAT(gmt_create, 'yyyy-MM-dd'),
     PRIMARY KEY (order_id) NOT ENFORCED
 ) WITH (
-	'connector' = 'mysql-cdc',
-	 'hostname' = 'mysql',
-	 'port' = '3306',
-	 'username' = 'root',
-	 'password' = '123456',
-	 'database-name' = 'retail',
-	 'table-name' = 'orders'
+    'connector' = 'mysql-cdc',
+    'hostname' = 'mysql',
+    'port' = '3306',
+    'username' = 'root',
+    'password' = '123456',
+    'database-name' = 'retail',
+    'table-name' = 'orders'
 );
 
 --Mysql CDC：类目表
@@ -50,18 +52,20 @@ CREATE TEMPORARY TABLE cate_dim (
     parent_cate_id VARCHAR,
     PRIMARY KEY (cate_id) NOT ENFORCED
 ) WITH (
-	'connector' = 'mysql-cdc',
-	 'hostname' = 'mysql',
-	 'port' = '3306',
-	 'username' = 'root',
-	 'password' = '123456',
-	 'database-name' = 'retail',
-	 'table-name' = 'category'
+    'connector' = 'mysql-cdc',
+    'hostname' = 'mysql',
+    'port' = '3306',
+    'username' = 'root',
+    'password' = '123456',
+    'database-name' = 'retail',
+    'table-name' = 'category'
 );
 ```
 
 Dynamic Table DDLs:
 ```
+%flink.ssql
+
 -- Flink 动态表：DWD 订单类目宽表
 CREATE TEMPORARY TABLE dwd_orders_cate (
     dt STRING,
@@ -84,6 +88,8 @@ CREATE  TABLE dws_cate_day (
 
 Streaming pipeline:
 ```
+%flink.ssql
+
 -- 流作业：两张Mysql cdc表join写入DWD
 INSERT INTO dwd_orders_cate
 SELECT
@@ -110,6 +116,8 @@ GROUP BY parent_cate_id, dt;
 
 请修改对应的日期：
 ```
+%flink.ssql
+
 -- 实时OLAP：Join 订单宽表和类目指标表，得出订单在这个类目下金额的占比
 SELECT
   order_id,
@@ -129,6 +137,8 @@ SELECT * FROM dwd_orders_cate WHERE dt = '${3-days-ago}';
 
 请修改对应的日期：
 ```
+%flink.bsql
+
 -- Batch统计：查看有脏数据的分区
 SELECT DISTINCT dt FROM dwd_orders_cate WHERE trans_amount <= 0;
 
