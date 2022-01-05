@@ -127,7 +127,11 @@ SELECT
   ON d.parent_cate_id = s.parent_cate_id -- Join condition
   WHERE d.dt = '${TODAY}' AND s.dt = '${TODAY}' -- 分区Pruning
   ORDER BY ratio DESC LIMIT 10;
-  
+```
+
+```
+%flink.bsql
+
 -- 历史OLAP：查询看订单宽表三天前的数据
 SELECT * FROM dwd_orders_cate WHERE dt = '${3-days-ago}';
 ```
